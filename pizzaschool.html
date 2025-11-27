@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="ko">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>척척박사 피자 가게</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', Arial, sans-serif;
+            background: linear-gradient(135deg, #FBCB0A 0%, #FFE066 100%);
+            min-height: 100%;
+            overflow-x: hidden;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100%;
+        }
+
+        /* 시작 화면 */
+        .start-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .shop-sign {
+            background: #FF8C00;
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            transform: rotate(-2deg);
+        }
+
+        .shop-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .chef-character {
+            font-size: 120px;
+            margin: 20px 0;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .chef-greeting {
+            font-size: 24px;
+            color: #8B4513;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .start-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 28px;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .start-button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        /* 레벨 선택 화면 */
+        .level-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .level-title {
+            font-size: 36px;
+            color: #8B4513;
+            margin-bottom: 40px;
+            font-weight: bold;
+        }
+
+        .level-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .level-button {
+            background: #FF8C00;
+            color: white;
+            border: none;
+            padding: 30px;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .level-button:hover {
+            background: #e67e00;
+            transform: translateY(-3px);
+        }
+
+        .level-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .level-desc {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* 게임 화면 */
+        .game-screen {
+            padding: 20px;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .customer-order {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .customer-character {
+            font-size: 60px;
+        }
+
+        .speech-bubble {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 20px;
+            border: 3px solid #FF8C00;
+            position: relative;
+            font-size: 24px;
+            font-weight: bold;
+            color: #8B4513;
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 15px solid transparent;
+            border-right-color: #FF8C00;
+        }
+
+        .game-stats {
+            text-align: right;
+        }
+
+        .score, .orders-left {
+            font-size: 20px;
+            font-weight: bold;
+            color: #8B4513;
+            margin: 5px 0;
+        }
+
+        .workspace {
+            background: #D2B48C;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .workspace-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .pizza-options {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .pizza-container {
+            text-align: center;
+        }
+
+        .pizza-label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 10px;
+        }
+
+        .pizza {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: #DEB887;
+            border: 4px solid #8B4513;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin: 0 auto;
+        }
+
+        .pizza:hover {
+            transform: scale(1.05);
+        }
+
+        .pizza-slice {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            background: #CD853F;
+            border: 2px solid #8B4513;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform-origin: 100% 100%;
+        }
+
+        .pizza-slice:hover {
+            background: #D2691E;
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .pizza-slice.selected {
+            background: #FF6347;
+            box-shadow: 0 0 10px rgba(255, 99, 71, 0.7);
+        }
+
+        .plate-area {
+            background: white;
+            border: 3px dashed #FF8C00;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            min-height: 120px;
+            margin-bottom: 20px;
+        }
+
+        .plate-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #8B4513;
+            margin-bottom: 15px;
+        }
+
+        .selected-slices {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .plate-slice {
+            width: 40px;
+            height: 40px;
+            background: #FF6347;
+            border: 2px solid #8B4513;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .submit-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 24px;
+            border-radius: 15px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .submit-button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .submit-button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 모달 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            margin: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        .modal-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .modal-message {
+            font-size: 20px;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .modal-button {
+            background: #FF8C00;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-button:hover {
+            background: #e67e00;
+        }
+
+        .success {
+            color: #4CAF50;
+        }
+
+        .error {
+            color: #F44336;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .shop-title {
+                font-size: 32px;
+            }
+
+            .chef-character {
+                font-size: 80px;
+            }
+
+            .pizza-options {
+                gap: 15px;
+            }
+
+            .pizza {
+                width: 120px;
+                height: 120px;
+            }
+
+            .game-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .customer-order {
+                justify-content: center;
+            }
+
+            .speech-bubble {
+                font-size: 18px;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container"><!-- 시작 화면 -->
+   <div id="startScreen" class="start-screen">
+    <div class="shop-sign">
+     <h1 id="shopName" class="shop-title">척척박사 피자 가게 🍕</h1>
+    </div>
+    <div class="chef-character">
+     👨‍🍳
+    </div>
+    <p id="chefGreeting" class="chef-greeting">안녕하세요! 맛있는 피자를 만들어보세요!</p><button id="startButton" class="start-button">가게 열기!</button>
+   </div><!-- 레벨 선택 화면 -->
+   <div id="levelScreen" class="level-screen hidden">
+    <h2 class="level-title">어떤 사장님이 되고 싶나요?</h2>
+    <div class="level-buttons"><button class="level-button" onclick="startGame('easy')">
+      <div class="level-name">
+       🌟 초보 사장님
+      </div>
+      <div class="level-desc">
+       쉬운 분수 (1/2, 1/4)
+      </div></button> <button class="level-button" onclick="startGame('normal')">
+      <div class="level-name">
+       ⭐ 베테랑 사장님
+      </div>
+      <div class="level-desc">
+       어려운 분수 (1/3, 1/6)
+      </div></button>
+    </div>
+   </div><!-- 게임 화면 -->
+   <div id="gameScreen" class="game-screen hidden">
+    <div class="game-header">
+     <div class="customer-order">
+      <div class="customer-character">
+       👦
+      </div>
+      <div class="speech-bubble" id="orderText">
+       1/2 피자 주세요!
+      </div>
+     </div>
+     <div class="game-stats">
+      <div class="score">
+       점수: <span id="currentScore">0</span>점
+      </div>
+      <div class="orders-left">
+       남은 주문: <span id="ordersLeft">5</span>/5
+      </div>
+     </div>
+    </div>
+    <div class="workspace">
+     <h3 class="workspace-title">🍕 피자 작업대</h3>
+     <div class="pizza-options">
+      <div class="pizza-container">
+       <div class="pizza-label">
+        4조각 피자
+       </div>
+       <div class="pizza" data-slices="4" id="pizza4">
+        <div class="pizza-slice" style="clip-path: polygon(0 0, 100% 0, 100% 100%); top: 0; left: 0;" data-pizza="4" data-slice="1"></div>
+        <div class="pizza-slice" style="clip-path: polygon(0 0, 100% 0, 0 100%); top: 0; right: 0;" data-pizza="4" data-slice="2"></div>
+        <div class="pizza-slice" style="clip-path: polygon(0 0, 0 100%, 100% 100%); bottom: 0; right: 0;" data-pizza="4" data-slice="3"></div>
+        <div class="pizza-slice" style="clip-path: polygon(0 100%, 100% 0, 100% 100%); bottom: 0; left: 0;" data-pizza="4" data-slice="4"></div>
+       </div>
+      </div>
+      <div class="pizza-container">
+       <div class="pizza-label">
+        6조각 피자
+       </div>
+       <div class="pizza" data-slices="6" id="pizza6">
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 50% 0, 100% 25%); top: 0; right: 25%;" data-pizza="6" data-slice="1"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 100% 25%, 100% 75%); right: 0; top: 25%;" data-pizza="6" data-slice="2"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 100% 75%, 50% 100%); bottom: 0; right: 25%;" data-pizza="6" data-slice="3"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 50% 100%, 0 75%); bottom: 0; left: 25%;" data-pizza="6" data-slice="4"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 0 75%, 0 25%); left: 0; top: 25%;" data-pizza="6" data-slice="5"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 0 25%, 50% 0); top: 0; left: 25%;" data-pizza="6" data-slice="6"></div>
+       </div>
+      </div>
+      <div class="pizza-container">
+       <div class="pizza-label">
+        8조각 피자
+       </div>
+       <div class="pizza" data-slices="8" id="pizza8">
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 50% 0, 85% 15%); top: 7.5%; right: 7.5%;" data-pizza="8" data-slice="1"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 85% 15%, 100% 50%); right: 0; top: 37.5%;" data-pizza="8" data-slice="2"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 100% 50%, 85% 85%); right: 7.5%; bottom: 7.5%;" data-pizza="8" data-slice="3"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 85% 85%, 50% 100%); bottom: 0; right: 37.5%;" data-pizza="8" data-slice="4"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 50% 100%, 15% 85%); bottom: 7.5%; left: 7.5%;" data-pizza="8" data-slice="5"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 15% 85%, 0 50%); left: 0; top: 37.5%;" data-pizza="8" data-slice="6"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 0 50%, 15% 15%); left: 7.5%; top: 7.5%;" data-pizza="8" data-slice="7"></div>
+        <div class="pizza-slice" style="clip-path: polygon(50% 50%, 15% 15%, 50% 0); top: 0; left: 37.5%;" data-pizza="8" data-slice="8"></div>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="plate-area">
+     <h3 class="plate-title">🍽️ 손님 접시 (클릭한 피자 조각)</h3>
+     <div class="selected-slices" id="selectedSlices"></div>
+     <div id="fractionDisplay" style="font-size: 24px; font-weight: bold; color: #8B4513; margin-top: 15px;"></div>
+    </div><button id="submitOrder" class="submit-button" disabled>손님에게 주기</button>
+   </div>
+  </div><!-- 모달 -->
+  <div id="modal" class="modal hidden">
+   <div class="modal-content">
+    <div id="modalIcon" class="modal-icon"></div>
+    <h3 id="modalTitle" class="modal-title"></h3>
+    <p id="modalMessage" class="modal-message"></p><button id="modalButton" class="modal-button">다음</button>
+   </div>
+  </div>
+  <script>
+        // 게임 상태
+        let gameState = {
+            currentLevel: '',
+            currentOrder: { numerator: 1, denominator: 2 },
+            selectedSlices: [],
+            score: 0,
+            ordersCompleted: 0,
+            totalOrders: 5,
+            attemptCount: 0
+        };
+
+        // 레벨별 분수 목록
+        const levelFractions = {
+            easy: [
+                { numerator: 1, denominator: 2 },
+                { numerator: 1, denominator: 4 },
+                { numerator: 2, denominator: 4 },
+                { numerator: 3, denominator: 4 }
+            ],
+            normal: [
+                { numerator: 1, denominator: 3 },
+                { numerator: 2, denominator: 3 },
+                { numerator: 1, denominator: 6 },
+                { numerator: 2, denominator: 6 },
+                { numerator: 3, denominator: 6 }
+            ]
+        };
+
+        // 설정 객체
+        const defaultConfig = {
+            shop_name: "척척박사 피자 가게 🍕",
+            chef_greeting: "안녕하세요! 맛있는 피자를 만들어보세요!",
+            start_button_text: "가게 열기!",
+            primary_color: "#FBCB0A",
+            secondary_color: "#FF8C00"
+        };
+
+        // Data SDK 핸들러
+        const dataHandler = {
+            onDataChanged(data) {
+                // 데이터 변경 시 UI 업데이트 (필요시)
+                console.log('게임 데이터 업데이트:', data);
+            }
+        };
+
+        // Element SDK 초기화
+        async function initializeSDKs() {
+            if (window.dataSdk) {
+                const initResult = await window.dataSdk.init(dataHandler);
+                if (!initResult.isOk) {
+                    console.error('Data SDK 초기화 실패');
+                }
+            }
+
+            if (window.elementSdk) {
+                await window.elementSdk.init({
+                    defaultConfig,
+                    onConfigChange: async (config) => {
+                        document.getElementById('shopName').textContent = config.shop_name || defaultConfig.shop_name;
+                        document.getElementById('chefGreeting').textContent = config.chef_greeting || defaultConfig.chef_greeting;
+                        document.getElementById('startButton').textContent = config.start_button_text || defaultConfig.start_button_text;
+                        
+                        // 색상 적용
+                        document.body.style.background = `linear-gradient(135deg, ${config.primary_color || defaultConfig.primary_color} 0%, #FFE066 100%)`;
+                        
+                        const buttons = document.querySelectorAll('.level-button, .modal-button');
+                        buttons.forEach(btn => {
+                            btn.style.backgroundColor = config.secondary_color || defaultConfig.secondary_color;
+                        });
+                    },
+                    mapToCapabilities: (config) => ({
+                        recolorables: [
+                            {
+                                get: () => config.primary_color || defaultConfig.primary_color,
+                                set: (value) => {
+                                    if (window.elementSdk) {
+                                        window.elementSdk.setConfig({ primary_color: value });
+                                    }
+                                }
+                            },
+                            {
+                                get: () => config.secondary_color || defaultConfig.secondary_color,
+                                set: (value) => {
+                                    if (window.elementSdk) {
+                                        window.elementSdk.setConfig({ secondary_color: value });
+                                    }
+                                }
+                            }
+                        ],
+                        borderables: [],
+                        fontEditable: undefined,
+                        fontSizeable: undefined
+                    }),
+                    mapToEditPanelValues: (config) => new Map([
+                        ["shop_name", config.shop_name || defaultConfig.shop_name],
+                        ["chef_greeting", config.chef_greeting || defaultConfig.chef_greeting],
+                        ["start_button_text", config.start_button_text || defaultConfig.start_button_text]
+                    ])
+                });
+            }
+        }
+
+        // 게임 데이터 저장
+        async function saveGameData(level, score, completedOrders) {
+            if (window.dataSdk) {
+                const gameData = {
+                    level: level,
+                    score: score,
+                    completed_orders: completedOrders,
+                    timestamp: new Date().toISOString()
+                };
+
+                const result = await window.dataSdk.create(gameData);
+                if (!result.isOk) {
+                    console.error('게임 데이터 저장 실패:', result.error);
+                }
+            }
+        }
+
+        // 이벤트 리스너
+        document.getElementById('startButton').addEventListener('click', () => {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('levelScreen').classList.remove('hidden');
+        });
+
+        // 게임 시작
+        function startGame(level) {
+            gameState.currentLevel = level;
+            gameState.score = 0;
+            gameState.ordersCompleted = 0;
+            gameState.attemptCount = 0;
+            
+            document.getElementById('levelScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            generateNewOrder();
+            updateUI();
+        }
+
+        // 새 주문 생성
+        function generateNewOrder() {
+            const fractions = levelFractions[gameState.currentLevel];
+            const randomFraction = fractions[Math.floor(Math.random() * fractions.length)];
+            gameState.currentOrder = randomFraction;
+            gameState.selectedSlices = [];
+            gameState.attemptCount = 0;
+            
+            document.getElementById('orderText').textContent = 
+                `${randomFraction.numerator}/${randomFraction.denominator} 피자 주세요!`;
+            
+            updateSelectedSlices();
+        }
+
+        // UI 업데이트
+        function updateUI() {
+            document.getElementById('currentScore').textContent = gameState.score;
+            document.getElementById('ordersLeft').textContent = 
+                `${gameState.totalOrders - gameState.ordersCompleted}/${gameState.totalOrders}`;
+        }
+
+        // 피자 조각 클릭 이벤트
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('pizza-slice')) {
+                const pizzaType = e.target.dataset.pizza;
+                const sliceNum = e.target.dataset.slice;
+                const sliceId = `${pizzaType}-${sliceNum}`;
+                
+                if (e.target.classList.contains('selected')) {
+                    // 선택 해제
+                    e.target.classList.remove('selected');
+                    gameState.selectedSlices = gameState.selectedSlices.filter(s => s.id !== sliceId);
+                } else {
+                    // 선택
+                    e.target.classList.add('selected');
+                    gameState.selectedSlices.push({
+                        id: sliceId,
+                        pizza: parseInt(pizzaType),
+                        slice: parseInt(sliceNum)
+                    });
+                }
+                
+                updateSelectedSlices();
+            }
+        });
+
+        // 선택된 조각 표시 업데이트
+        function updateSelectedSlices() {
+            const container = document.getElementById('selectedSlices');
+            const display = document.getElementById('fractionDisplay');
+            const submitBtn = document.getElementById('submitOrder');
+            
+            container.innerHTML = '';
+            
+            if (gameState.selectedSlices.length === 0) {
+                display.textContent = '';
+                submitBtn.disabled = true;
+                return;
+            }
+            
+            // 같은 피자 타입별로 그룹화
+            const groups = {};
+            gameState.selectedSlices.forEach(slice => {
+                if (!groups[slice.pizza]) {
+                    groups[slice.pizza] = [];
+                }
+                groups[slice.pizza].push(slice);
+            });
+            
+            // 각 그룹별로 분수 표시
+            let totalFraction = 0;
+            Object.keys(groups).forEach(pizzaType => {
+                const slices = groups[pizzaType];
+                const numerator = slices.length;
+                const denominator = parseInt(pizzaType);
+                
+                // 조각 표시
+                slices.forEach(() => {
+                    const sliceDiv = document.createElement('div');
+                    sliceDiv.className = 'plate-slice';
+                    sliceDiv.textContent = '🍕';
+                    container.appendChild(sliceDiv);
+                });
+                
+                totalFraction += numerator / denominator;
+            });
+            
+            // 분수 표시
+            if (Object.keys(groups).length === 1) {
+                const pizzaType = Object.keys(groups)[0];
+                const count = groups[pizzaType].length;
+                display.textContent = `${count}/${pizzaType}`;
+            } else {
+                display.textContent = `총 ${totalFraction.toFixed(2)} 피자`;
+            }
+            
+            submitBtn.disabled = false;
+        }
+
+        // 주문 제출
+        document.getElementById('submitOrder').addEventListener('click', async () => {
+            const submitBtn = document.getElementById('submitOrder');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '확인 중...';
+            
+            // 선택된 조각들의 총 분수 값 계산
+            let totalValue = 0;
+            const groups = {};
+            
+            gameState.selectedSlices.forEach(slice => {
+                if (!groups[slice.pizza]) {
+                    groups[slice.pizza] = 0;
+                }
+                groups[slice.pizza]++;
+            });
+            
+            Object.keys(groups).forEach(pizzaType => {
+                const count = groups[pizzaType];
+                const denominator = parseInt(pizzaType);
+                totalValue += count / denominator;
+            });
+            
+            const orderValue = gameState.currentOrder.numerator / gameState.currentOrder.denominator;
+            const isCorrect = Math.abs(totalValue - orderValue) < 0.001; // 부동소수점 오차 고려
+            
+            gameState.attemptCount++;
+            
+            if (isCorrect) {
+                // 정답
+                gameState.score += 10;
+                gameState.ordersCompleted++;
+                
+                showModal(
+                    '🎉',
+                    '딱 맞아요!',
+                    `딩동! ${gameState.currentOrder.numerator}/${gameState.currentOrder.denominator}과 ${Object.keys(groups).map(p => `${groups[p]}/${p}`).join(' + ')}는 같아요! 완벽한 피자예요!`,
+                    'success'
+                );
+                
+                // 게임 데이터 저장
+                await saveGameData(gameState.currentLevel, gameState.score, gameState.ordersCompleted);
+                
+            } else {
+                // 오답 - 시도 횟수에 따른 힌트
+                let message = '';
+                if (gameState.attemptCount === 1) {
+                    message = '어? 양이 다른 것 같아요. 다시 한번!';
+                } else if (gameState.attemptCount === 2) {
+                    message = `음... ${gameState.currentOrder.numerator}/${gameState.currentOrder.denominator} 피자를 만들려면 몇 조각이 필요할까요?`;
+                } else {
+                    message = `${gameState.currentOrder.numerator}/${gameState.currentOrder.denominator} = ${orderValue.toFixed(2)}이고, 지금 만든 피자는 ${totalValue.toFixed(2)}예요. 다시 도전해보세요!`;
+                }
+                
+                showModal('😅', '다시 해보세요!', message, 'error');
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = '손님에게 주기';
+        });
+
+        // 모달 표시
+        function showModal(icon, title, message, type) {
+            const modal = document.getElementById('modal');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalButton = document.getElementById('modalButton');
+            
+            modalIcon.textContent = icon;
+            modalTitle.textContent = title;
+            modalTitle.className = `modal-title ${type}`;
+            modalMessage.textContent = message;
+            
+            modal.classList.remove('hidden');
+            
+            modalButton.onclick = () => {
+                modal.classList.add('hidden');
+                
+                if (type === 'success') {
+                    if (gameState.ordersCompleted >= gameState.totalOrders) {
+                        // 게임 완료
+                        showGameComplete();
+                    } else {
+                        // 다음 주문
+                        clearSelections();
+                        generateNewOrder();
+                        updateUI();
+                    }
+                } else {
+                    // 오답 시 선택 초기화
+                    clearSelections();
+                }
+            };
+        }
+
+        // 선택 초기화
+        function clearSelections() {
+            document.querySelectorAll('.pizza-slice.selected').forEach(slice => {
+                slice.classList.remove('selected');
+            });
+            gameState.selectedSlices = [];
+            updateSelectedSlices();
+        }
+
+        // 게임 완료
+        function showGameComplete() {
+            const finalScore = gameState.score;
+            const levelName = gameState.currentLevel === 'easy' ? '초보 사장님' : '베테랑 사장님';
+            
+            showModal(
+                '🏆',
+                '오늘 장사 끝!',
+                `${levelName} 레벨 완료!\n최종 점수: ${finalScore}점\n정말 훌륭한 피자 사장님이에요!`,
+                'success'
+            );
+            
+            document.getElementById('modalButton').onclick = () => {
+                document.getElementById('modal').classList.add('hidden');
+                document.getElementById('gameScreen').classList.add('hidden');
+                document.getElementById('startScreen').classList.remove('hidden');
+            };
+        }
+
+        // 페이지 로드 시 SDK 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSDKs();
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a5145c552c43538',t:'MTc2NDI0MjgwNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
